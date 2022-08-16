@@ -21,6 +21,7 @@ template HallMove() {
   signal output opponentPosition;
   signal output finalOpponentFacing;
   signal output finalOpponentHP;
+  signal output boardResult;
 
   var boardY = board % 1000;
   var boardX = (board - boardY) / 1000;
@@ -69,6 +70,17 @@ template HallMove() {
 
   finalPlayerFacing <-- (playerMove > 0 && playerMove < 5) ? playerMove : playerFacing;
   finalOpponentFacing <-- (opponentMove > 0 && opponentMove < 5) ? opponentMove : opponentFacing;
+
+  component poseidon2 = Poseidon(8);
+  poseidon2.inputs[0] <== nonce;
+  poseidon2.inputs[1] <== board;
+  poseidon2.inputs[2] <== playerPosition;
+  poseidon2.inputs[3] <== finalPlayerFacing;
+  poseidon2.inputs[4] <== finalPlayerHP;
+  poseidon2.inputs[5] <== opponentPosition;
+  poseidon2.inputs[6] <== finalOpponentFacing;
+  poseidon2.inputs[7] <== finalOpponentHP;
+  boardResult <== poseidon2.out;
 }
 
 component main = HallMove();

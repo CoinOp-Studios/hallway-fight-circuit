@@ -450,6 +450,42 @@ describe("Move Circuit Tests", () => {
         assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP - 1);
       });
   });
+
+  it("should allow chaining using the board result", async () => {
+    let witness = null;
+    let boardHash = 1;
+    return getBoardHash(createCircuit, {})
+      .then((bh) => {
+        boardHash = bh;
+        return moveCircuit.calculateWitness({
+          ...DEFAULT_PARAMS,
+          boardHash,
+          playerMove: 5,
+          opponentMove: 0,
+        });
+      })
+      .then((w) => {
+        witness = w;
+        return moveCircuit.checkConstraints(w);
+      })
+      .then(() => {
+        const playerPosition = witness[1];
+        const boardResult = witness[7]; // <-- new board hash
+        assert.equal(playerPosition, DEFAULT_PARAMS.player + 1);
+        assert.notEqual(boardHash, boardResult);
+        return moveCircuit.calculateWitness({
+          ...DEFAULT_PARAMS,
+          player: playerPosition,
+          boardHash: boardResult,
+          playerMove: 5,
+          opponentMove: 0,
+        });
+      })
+      .then((w) => {
+        const playerPosition = w[1];
+        assert.equal(playerPosition, DEFAULT_PARAMS.player + 2);
+      });
+  });
 });
 
 /*

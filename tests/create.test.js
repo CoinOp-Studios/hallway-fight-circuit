@@ -21,9 +21,7 @@ describe("Create Circuit Tests", function () {
   let createCircuit;
 
   before(async () => {
-    console.log("dir", __dirname);
     const circuitFile = path.join(__dirname, "..", "circuits", "create.circom");
-    console.log("circuitFile", circuitFile);
     createCircuit = await tester(circuitFile, { output: "./circom" });
   });
 
