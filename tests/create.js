@@ -1,15 +1,10 @@
-const { throws } = require("assert");
 const chai = require("chai");
-const { appendFileSync } = require("fs");
 const path = require("path");
-const Scalar = require("ffjavascript").Scalar;
-const F1Field = require("ffjavascript").F1Field;
-const utils = require("ffjavascript").utils;
 const tester = require("circom_tester").wasm;
 
 const assert = chai.assert;
 
-describe("Move Circuit Tests", () => {
+describe("Create Circuit Tests", () => {
   // this.timeout(100000);
 
   let createCircuit;
