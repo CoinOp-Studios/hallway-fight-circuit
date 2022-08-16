@@ -339,6 +339,117 @@ describe("Move Circuit Tests", () => {
         });
     });
   });
+
+  it("Should not allow movement to same location", async () => {
+    let witness = null;
+    let errored = false;
+    return getBoardHash(createCircuit, {
+      playerFacing: 1,
+      opponentFacing: 3,
+      player: 2004,
+      opponent: 2005,
+    })
+      .then((boardHash) => {
+        return moveCircuit.calculateWitness({
+          ...DEFAULT_PARAMS,
+          boardHash,
+          playerFacing: 1,
+          opponentFacing: 3,
+          player: 2004,
+          opponent: 2005,
+          playerMove: 5,
+          opponentMove: 0,
+        });
+      })
+      .then((w) => {
+        witness = w;
+        return moveCircuit.checkConstraints(w);
+      })
+      .catch((err) => {
+        assert(err.message.indexOf("Assert Failed") > -1);
+        errored = true;
+      })
+      .finally(() => {
+        assert.isTrue(errored);
+      });
+  });
+
+  it("Should not allow an attack unless facing", async () => {
+    let witness = null;
+    let errored = false;
+    return getBoardHash(createCircuit, {
+      playerFacing: 1,
+      opponentFacing: 3,
+      player: 9002,
+      opponent: 2005,
+    })
+      .then((boardHash) => {
+        return moveCircuit.calculateWitness({
+          ...DEFAULT_PARAMS,
+          boardHash,
+          playerFacing: 1,
+          opponentFacing: 3,
+          player: 2004,
+          opponent: 2005,
+          playerMove: 6,
+          opponentMove: 0,
+        });
+      })
+      .then((w) => {
+        witness = w;
+        return moveCircuit.checkConstraints(w);
+      })
+      .catch((err) => {
+        assert(err.message.indexOf("Assert Failed") > -1);
+        errored = true;
+      })
+      .finally(() => {
+        assert.isTrue(errored);
+      });
+  });
+
+  it("Should do damage on a player attack", async () => {
+    let witness = null;
+    let errored = false;
+    return getBoardHash(createCircuit, {
+      playerFacing: 1,
+      opponentFacing: 3,
+      player: 2004,
+      opponent: 2005,
+    })
+      .then((boardHash) => {
+        return moveCircuit.calculateWitness({
+          ...DEFAULT_PARAMS,
+          boardHash,
+          playerFacing: 1,
+          opponentFacing: 3,
+          player: 2004,
+          opponent: 2005,
+          playerMove: 6,
+          opponentMove: 0,
+        });
+      })
+      .then((w) => {
+        witness = w;
+        return moveCircuit.checkConstraints(w);
+      })
+      .then(() => {
+        const [
+          playerPosition,
+          playerFacing,
+          playerHP,
+          opponentPosition,
+          opponentFacing,
+          opponentHP,
+        ] = witness.slice(1, 7);
+        assert.equal(playerPosition, 2004);
+        assert.equal(playerFacing, 1);
+        assert.equal(playerHP, DEFAULT_PARAMS.playerHP);
+        assert.equal(opponentPosition, 2005);
+        assert.equal(opponentFacing, 3);
+        assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP - 1);
+      });
+  });
 });
 
 /*
