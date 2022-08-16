@@ -4,8 +4,19 @@ const tester = require("circom_tester").wasm;
 
 const assert = chai.assert;
 
-describe("Create Circuit Tests", () => {
-  // this.timeout(100000);
+const DEFAULT_PARAMS = {
+  nonce: 1,
+  board: 10008,
+  player: 4001,
+  playerFacing: 1,
+  playerHP: 10,
+  opponent: 8002,
+  opponentFacing: 3,
+  opponentHP: 10,
+};
+
+describe("Create Circuit Tests", function () {
+  this.timeout(100000);
 
   let createCircuit;
 
@@ -17,12 +28,7 @@ describe("Create Circuit Tests", () => {
   });
 
   it("Should setup on happy path", async () => {
-    const witness = await createCircuit.calculateWitness({
-      nonce: 1,
-      board: 10008,
-      start: 1004,
-      move: 1,
-    });
+    const witness = await createCircuit.calculateWitness(DEFAULT_PARAMS);
 
     await createCircuit.checkConstraints(witness);
   });
@@ -31,10 +37,8 @@ describe("Create Circuit Tests", () => {
     let errored = false;
     return createCircuit
       .calculateWitness({
-        nonce: 1,
-        board: 10008,
-        start: 11004,
-        move: 1,
+        ...DEFAULT_PARAMS,
+        player: 11004,
       })
       .then((witness) => {
         return createCircuit.checkConstraints(witness);

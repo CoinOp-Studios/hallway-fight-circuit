@@ -5,7 +5,7 @@
   "author": "Dev Bruce <0xbigbee@pm.me>",
   "license": "MIT",
   "scripts": {
-    "test": "mocha tests --timeout 10000"
+    "test": "mocha tests"
   },
   "dependencies": {
     "chai": "^4.3.6",
