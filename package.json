@@ -1,0 +1,15 @@
+{
+  "name": "simple-fight-circuit",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Dev Bruce <0xbigbee@pm.me>",
+  "license": "MIT",
+  "dependencies": {
+    "chai": "^4.3.6",
+    "circom_tester": "^0.0.14",
+    "circomlib": "^2.0.5",
+    "ffjavascript": "^0.2.55",
+    "mocha": "^10.0.0",
+    "snarkjs": "^0.4.24"
+  }
+}
