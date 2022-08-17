@@ -20,10 +20,6 @@ Install 'Circom' using their [downloads](https://docs.circom.io/downloads/downlo
 
 Always specified as (x \* 1000) + y. This allows us to encode [x, y] using one parameter.
 
-### Facing
-
-Starting: N=1, E=2, S=3, W=4
-
 ### Commands
 
 | Name    | Value | Description       |
