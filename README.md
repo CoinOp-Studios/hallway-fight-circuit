@@ -26,36 +26,36 @@ Starting: N=1, E=2, S=3, W=4
 
 ### Commands
 
-| Name    | Value | Description    |
-| ------- | ----- | -------------- |
-| NULL    | 0     | reserved       |
-| FACE_N  | 1     |                |
-| FACE_E  | 2     |                |
-| FACE_S  | 3     |                |
-| FACE_W  | 4     |                |
-| FORWARD | 5     | move forward   |
-| ATTACK  | 6     | attack forward |
+| Name    | Value | Description       |
+| ------- | ----- | --------------    |
+| NULL    | 0     | reserved          |
+| MOVE_N  | 1     | move or attack N  |
+| MOVE_E  | 2     | move or attack E  |
+| MOVE_S  | 3     | move or attack S  |
+| MOVE_W  | 4     | move or attack W  |
 
 ## Circuits
 
 ```mermaid
 sequenceDiagram
   actor Player
-  actor AI
+  actor Backend
   actor Blockchain
   actor Executor
   Player->>Blockchain: Initialize Game
   Blockchain->>Player: send BoardHash
   Blockchain->>Executor: game available
-  Executor->>AI: game available
-  AI->>Blockchain: Join game
+  Executor->>Backend: game available
+  Backend->>Blockchain: Join game
   Blockchain->>Executor: start game
   Executor->>Player: Ready
-  Player->>Blockchain: make move
-  Blockchain->>Executor: move made
-  Executor->>AI: move made
-  AI->>Blockchain: make move
-  Blockchain->Blockchain: repeat per turn
+  Player->>Backend: make move
+  Backend->>Player: make move
+  Player-->Backend: repeat per turn
+  Player-->>Blockchain: appeal invalid move
+  Backend-->>Blockchain: appeal invalid move
+  Blockchain-->>Executor: appeal
+  Player-->Blockchain: end game
 ```
 
 Where - "executor" is GraphQL plus something like Gelato or Chainlink Keepers.
