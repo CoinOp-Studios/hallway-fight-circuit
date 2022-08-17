@@ -7,12 +7,9 @@ const assert = chai.assert;
 const DEFAULT_PARAMS = {
   nonce: 1,
   board: 10008,
-  player: 4001,
-  playerFacing: 1,
-  playerHP: 10,
-  opponent: 8002,
-  opponentFacing: 3,
-  opponentHP: 10,
+  positions: [4001, 8002],
+  facing: [1, 3],
+  hp: [10, 10],
 };
 
 describe("Create Circuit Tests", function () {
@@ -36,7 +33,7 @@ describe("Create Circuit Tests", function () {
     return createCircuit
       .calculateWitness({
         ...DEFAULT_PARAMS,
-        player: 11004,
+        positions: [11004, 8002],
       })
       .then((witness) => {
         return createCircuit.checkConstraints(witness);

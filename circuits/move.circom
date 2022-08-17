@@ -7,14 +7,11 @@ template HallMove() {
   signal input boardHash;
   signal input nonce;
   signal input board; // x * 1000 + y
-  signal input player; // x * 1000 + y
-  signal input playerFacing;
-  signal input playerHP;
-  signal input opponent;
-  signal input opponentFacing;
-  signal input opponentHP;
-  signal input playerMove;
-  signal input opponentMove;
+  signal input positions[2]; // x * 1000 + y
+  signal input hp[2];
+  signal input facing[2];
+  signal input move;
+  signal input turn;
   signal output playerPosition;
   signal output finalPlayerFacing;
   signal output finalPlayerHP;
@@ -23,53 +20,52 @@ template HallMove() {
   signal output finalOpponentHP;
   signal output boardResult;
 
+  signal areFacing;
+  signal isPlayerMove;
+
   var boardY = board % 1000;
   var boardX = (board - boardY) / 1000;
-  var playerY = player % 1000;
-  var playerX = (player - playerY) / 1000;
-  var oppY = opponent % 1000;
-  var oppX = (opponent - oppY) / 1000;
+  var playerY = positions[0] % 1000;
+  var playerX = (positions[0] - playerY) / 1000;
+  var oppY = positions[1] % 1000;
+  var oppX = (positions[1] - oppY) / 1000;
 
-  assert(playerFacing > 0 && playerFacing < 5); // player facing direction.
+  assert(facing[0] > 0 && facing[0] < 5); // player facing direction.
+  assert(facing[1] > 0 && facing[1] < 5); // opponent facing direction.
+  assert(hp[0] > 0 && hp[1] > 0); // player and opponent HP.
   assert(boardX > playerX + 1 && playerX > 0); // player position on the board.
   assert(boardY > playerY && playerY > -1); // player position on the board.
-  assert(opponentFacing > 0 && opponentFacing < 5); // opponent facing direction.
   assert(boardX > oppX + 1 && oppX > 0); // opponent position on the board.
   assert(boardY > oppY && oppY > -1); // opponent position on the board.
 
-  // player move or opponent move - XOR
-  // assert(playerMove ? !opponentMove : opponentMove);
-  assert(!playerMove != !opponentMove);
-
-  signal areFacing <-- (
-    (playerMove && mover(player, 5, playerFacing) == opponent)
-    || (!playerMove && mover(opponent, 5, opponentFacing) == player)
+  isPlayerMove <-- turn % 2 == 0;
+  areFacing <-- (
+    (isPlayerMove && mover(positions[0], 5, facing[0]) == positions[1])
+    || (!isPlayerMove && mover(positions[1], 5, facing[1]) == positions[0])
   );
 
-  signal isAttack <-- playerMove == 6 || opponentMove == 6;
-
-  assert(areFacing || !isAttack); // attack must be facing each other.
+  assert(areFacing || move != 6); // attack must be facing each other.
 
   // Verify position
   component poseidon = Poseidon(8);
   poseidon.inputs[0] <== nonce;
   poseidon.inputs[1] <== board;
-  poseidon.inputs[2] <== player;
-  poseidon.inputs[3] <== playerFacing;
-  poseidon.inputs[4] <== playerHP;
-  poseidon.inputs[5] <== opponent;
-  poseidon.inputs[6] <== opponentFacing;
-  poseidon.inputs[7] <== opponentHP;
+  poseidon.inputs[2] <== positions[0];
+  poseidon.inputs[3] <== facing[0];
+  poseidon.inputs[4] <== hp[0];
+  poseidon.inputs[5] <== positions[1];
+  poseidon.inputs[6] <== facing[1];
+  poseidon.inputs[7] <== hp[1];
 
   assert(boardHash == poseidon.out);
-  playerPosition <-- mover(player, playerMove, playerFacing);
-  opponentPosition <-- mover(opponent, opponentMove, opponentFacing);
+  playerPosition <-- isPlayerMove ? mover(positions[0], move, facing[0]) : positions[0];
+  opponentPosition <-- !isPlayerMove ? mover(positions[1], move, facing[1]) : positions[1];
   assert(playerPosition != opponentPosition);
-  finalPlayerHP <-- opponentMove == 6 ? playerHP - 1 : playerHP;
-  finalOpponentHP <-- playerMove == 6 ? opponentHP - 1 : opponentHP;
+  finalPlayerHP <-- (!isPlayerMove && move == 6) ? hp[0] - 1 : hp[0];
+  finalOpponentHP <-- (isPlayerMove && move == 6) ? hp[1] - 1 : hp[1];
 
-  finalPlayerFacing <-- (playerMove > 0 && playerMove < 5) ? playerMove : playerFacing;
-  finalOpponentFacing <-- (opponentMove > 0 && opponentMove < 5) ? opponentMove : opponentFacing;
+  finalPlayerFacing <-- (isPlayerMove && move > 0 && move < 5) ? move : facing[0];
+  finalOpponentFacing <-- (!isPlayerMove && move > 0 && move < 5) ? move : facing[1];
 
   component poseidon2 = Poseidon(8);
   poseidon2.inputs[0] <== nonce;

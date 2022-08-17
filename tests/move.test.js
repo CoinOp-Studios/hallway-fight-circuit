@@ -7,12 +7,9 @@ const assert = chai.assert;
 const DEFAULT_PARAMS = {
   nonce: 1,
   board: 10010,
-  player: 4001,
-  playerFacing: 1,
-  playerHP: 20,
-  opponent: 8009,
-  opponentFacing: 3,
-  opponentHP: 10,
+  positions: [4001, 8009],
+  facing: [1, 3],
+  hp: [20, 10],
 };
 
 async function getCircuit(name) {
@@ -51,13 +48,14 @@ describe("Move Circuit Tests", () => {
   describe("Basic movement - player", function () {
     it("Should move forward (N)", async () => {
       let witness = null;
+      const facing = [1, 3];
       return getBoardHash(createCircuit, {})
         .then((boardHash) => {
           return moveCircuit.calculateWitness({
             ...DEFAULT_PARAMS,
             boardHash,
-            playerMove: 5,
-            opponentMove: 0,
+            move: 5,
+            turn: 0,
           });
         })
         .then((w) => {
@@ -73,27 +71,28 @@ describe("Move Circuit Tests", () => {
             opponentFacing,
             opponentHP,
           ] = witness.slice(1, 7);
-          assert.equal(playerPosition, 4002);
-          assert.equal(playerFacing, DEFAULT_PARAMS.playerFacing);
-          assert.equal(playerHP, DEFAULT_PARAMS.playerHP);
-          assert.equal(opponentPosition, DEFAULT_PARAMS.opponent);
-          assert.equal(opponentFacing, DEFAULT_PARAMS.opponentFacing);
-          assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP);
+          assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] + 1);
+          assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]);
+          assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
+          assert.equal(opponentHP, DEFAULT_PARAMS.hp[1]);
+          assert.equal(playerFacing, facing[0]);
+          assert.equal(opponentFacing, facing[1]);
         });
     });
 
     it("Should move forward (E)", async () => {
       let witness = null;
+      let facing = [2, 3];
       return getBoardHash(createCircuit, {
-        playerFacing: 2,
+        facing,
       })
         .then((boardHash) => {
           return moveCircuit.calculateWitness({
             ...DEFAULT_PARAMS,
             boardHash,
-            playerFacing: 2,
-            playerMove: 5,
-            opponentMove: 0,
+            move: 5,
+            turn: 0,
+            facing,
           });
         })
         .then((w) => {
@@ -109,27 +108,28 @@ describe("Move Circuit Tests", () => {
             opponentFacing,
             opponentHP,
           ] = witness.slice(1, 7);
-          assert.equal(playerPosition, 5001);
-          assert.equal(playerFacing, 2);
-          assert.equal(playerHP, DEFAULT_PARAMS.playerHP);
-          assert.equal(opponentPosition, DEFAULT_PARAMS.opponent);
-          assert.equal(opponentFacing, DEFAULT_PARAMS.opponentFacing);
-          assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP);
+          assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] + 1000);
+          assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]);
+          assert.equal(playerFacing, facing[0]);
+          assert.equal(opponentFacing, facing[1]);
+          assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
+          assert.equal(opponentHP, DEFAULT_PARAMS.hp[1]);
         });
     });
 
     it("Should move forward (S)", async () => {
       let witness = null;
+      let facing = [3, 2];
       return getBoardHash(createCircuit, {
-        playerFacing: 3,
+        facing,
       })
         .then((boardHash) => {
           return moveCircuit.calculateWitness({
             ...DEFAULT_PARAMS,
             boardHash,
-            playerFacing: 3,
-            playerMove: 5,
-            opponentMove: 0,
+            move: 5,
+            turn: 0,
+            facing,
           });
         })
         .then((w) => {
@@ -145,27 +145,28 @@ describe("Move Circuit Tests", () => {
             opponentFacing,
             opponentHP,
           ] = witness.slice(1, 7);
-          assert.equal(playerPosition, 4000);
-          assert.equal(playerFacing, 3);
-          assert.equal(playerHP, DEFAULT_PARAMS.playerHP);
-          assert.equal(opponentPosition, DEFAULT_PARAMS.opponent);
-          assert.equal(opponentFacing, DEFAULT_PARAMS.opponentFacing);
-          assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP);
+          assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] - 1);
+          assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]);
+          assert.equal(playerFacing, facing[0]);
+          assert.equal(opponentFacing, facing[1]);
+          assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
+          assert.equal(opponentHP, DEFAULT_PARAMS.hp[1]);
         });
     });
 
     it("Should move forward (W)", async () => {
       let witness = null;
+      let facing = [4, 3];
       return getBoardHash(createCircuit, {
-        playerFacing: 4,
+        facing,
       })
         .then((boardHash) => {
           return moveCircuit.calculateWitness({
             ...DEFAULT_PARAMS,
             boardHash,
-            playerFacing: 4,
-            playerMove: 5,
-            opponentMove: 0,
+            move: 5,
+            turn: 0,
+            facing,
           });
         })
         .then((w) => {
@@ -181,29 +182,30 @@ describe("Move Circuit Tests", () => {
             opponentFacing,
             opponentHP,
           ] = witness.slice(1, 7);
-          assert.equal(playerPosition, 3001);
-          assert.equal(playerFacing, 4);
-          assert.equal(playerHP, DEFAULT_PARAMS.playerHP);
-          assert.equal(opponentPosition, DEFAULT_PARAMS.opponent);
-          assert.equal(opponentFacing, DEFAULT_PARAMS.opponentFacing);
-          assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP);
+          assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] - 1000);
+          assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]);
+          assert.equal(playerFacing, facing[0]);
+          assert.equal(opponentFacing, facing[1]);
+          assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
+          assert.equal(opponentHP, DEFAULT_PARAMS.hp[1]);
         });
     });
   });
+
   describe("Basic movement - opponent", function () {
     it("Should move forward (N)", async () => {
       let witness = null;
-      let facing = 1;
+      let facing = [3, 1];
       return getBoardHash(createCircuit, {
-        opponentFacing: facing,
+        facing,
       })
         .then((boardHash) => {
           return moveCircuit.calculateWitness({
             ...DEFAULT_PARAMS,
             boardHash,
-            playerMove: 0,
-            opponentFacing: facing,
-            opponentMove: 5,
+            move: 5,
+            turn: 1,
+            facing,
           });
         })
         .then((w) => {
@@ -219,28 +221,28 @@ describe("Move Circuit Tests", () => {
             opponentFacing,
             opponentHP,
           ] = witness.slice(1, 7);
-          assert.equal(playerPosition, DEFAULT_PARAMS.player);
-          assert.equal(playerFacing, DEFAULT_PARAMS.playerFacing);
-          assert.equal(playerHP, DEFAULT_PARAMS.playerHP);
-          assert.equal(opponentPosition, DEFAULT_PARAMS.opponent + 1);
-          assert.equal(opponentFacing, facing);
-          assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP);
+          assert.equal(playerPosition, DEFAULT_PARAMS.positions[0]);
+          assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] + 1);
+          assert.equal(playerFacing, facing[0]);
+          assert.equal(opponentFacing, facing[1]);
+          assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
+          assert.equal(opponentHP, DEFAULT_PARAMS.hp[1]);
         });
     });
 
     it("Should move forward (E)", async () => {
       let witness = null;
-      let facing = 2;
+      let facing = [3, 2];
       return getBoardHash(createCircuit, {
-        opponentFacing: facing,
+        facing,
       })
         .then((boardHash) => {
           return moveCircuit.calculateWitness({
             ...DEFAULT_PARAMS,
             boardHash,
-            playerMove: 0,
-            opponentFacing: facing,
-            opponentMove: 5,
+            move: 5,
+            turn: 1,
+            facing,
           });
         })
         .then((w) => {
@@ -256,28 +258,28 @@ describe("Move Circuit Tests", () => {
             opponentFacing,
             opponentHP,
           ] = witness.slice(1, 7);
-          assert.equal(playerPosition, DEFAULT_PARAMS.player);
-          assert.equal(playerFacing, DEFAULT_PARAMS.playerFacing);
-          assert.equal(playerHP, DEFAULT_PARAMS.playerHP);
-          assert.equal(opponentPosition, DEFAULT_PARAMS.opponent + 1000);
-          assert.equal(opponentFacing, facing);
-          assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP);
+          assert.equal(playerPosition, DEFAULT_PARAMS.positions[0]);
+          assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] + 1000);
+          assert.equal(playerFacing, facing[0]);
+          assert.equal(opponentFacing, facing[1]);
+          assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
+          assert.equal(opponentHP, DEFAULT_PARAMS.hp[1]);
         });
     });
 
     it("Should move forward (S)", async () => {
       let witness = null;
-      let facing = 3;
+      let facing = [3, 3];
       return getBoardHash(createCircuit, {
-        opponentFacing: facing,
+        facing,
       })
         .then((boardHash) => {
           return moveCircuit.calculateWitness({
             ...DEFAULT_PARAMS,
             boardHash,
-            playerMove: 0,
-            opponentFacing: facing,
-            opponentMove: 5,
+            move: 5,
+            turn: 1,
+            facing,
           });
         })
         .then((w) => {
@@ -293,28 +295,28 @@ describe("Move Circuit Tests", () => {
             opponentFacing,
             opponentHP,
           ] = witness.slice(1, 7);
-          assert.equal(playerPosition, DEFAULT_PARAMS.player);
-          assert.equal(playerFacing, DEFAULT_PARAMS.playerFacing);
-          assert.equal(playerHP, DEFAULT_PARAMS.playerHP);
-          assert.equal(opponentPosition, DEFAULT_PARAMS.opponent - 1);
-          assert.equal(opponentFacing, facing);
-          assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP);
+          assert.equal(playerPosition, DEFAULT_PARAMS.positions[0]);
+          assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] - 1);
+          assert.equal(playerFacing, facing[0]);
+          assert.equal(opponentFacing, facing[1]);
+          assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
+          assert.equal(opponentHP, DEFAULT_PARAMS.hp[1]);
         });
     });
 
     it("Should move forward (W)", async () => {
       let witness = null;
-      let facing = 4;
+      let facing = [3, 4];
       return getBoardHash(createCircuit, {
-        opponentFacing: facing,
+        facing,
       })
         .then((boardHash) => {
           return moveCircuit.calculateWitness({
             ...DEFAULT_PARAMS,
             boardHash,
-            playerMove: 0,
-            opponentFacing: facing,
-            opponentMove: 5,
+            move: 5,
+            turn: 1,
+            facing,
           });
         })
         .then((w) => {
@@ -330,39 +332,36 @@ describe("Move Circuit Tests", () => {
             opponentFacing,
             opponentHP,
           ] = witness.slice(1, 7);
-          assert.equal(playerPosition, DEFAULT_PARAMS.player);
-          assert.equal(playerFacing, DEFAULT_PARAMS.playerFacing);
-          assert.equal(playerHP, DEFAULT_PARAMS.playerHP);
-          assert.equal(opponentPosition, DEFAULT_PARAMS.opponent - 1000);
-          assert.equal(opponentFacing, facing);
-          assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP);
+          assert.equal(playerPosition, DEFAULT_PARAMS.positions[0]);
+          assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] - 1000);
+          assert.equal(playerFacing, facing[0]);
+          assert.equal(opponentFacing, facing[1]);
+          assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
+          assert.equal(opponentHP, DEFAULT_PARAMS.hp[1]);
         });
     });
   });
 
   it("Should not allow movement to same location", async () => {
-    let witness = null;
     let errored = false;
+    let witness;
+    const facing = [1, 3];
+    const positions = [2004, 2005];
     return getBoardHash(createCircuit, {
-      playerFacing: 1,
-      opponentFacing: 3,
-      player: 2004,
-      opponent: 2005,
+      facing,
+      positions,
     })
       .then((boardHash) => {
         return moveCircuit.calculateWitness({
           ...DEFAULT_PARAMS,
           boardHash,
-          playerFacing: 1,
-          opponentFacing: 3,
-          player: 2004,
-          opponent: 2005,
-          playerMove: 5,
-          opponentMove: 0,
+          move: 5,
+          turn: 0,
+          facing,
+          positions,
         });
       })
       .then((w) => {
-        witness = w;
         return moveCircuit.checkConstraints(w);
       })
       .catch((err) => {
@@ -377,22 +376,20 @@ describe("Move Circuit Tests", () => {
   it("Should not allow an attack unless facing", async () => {
     let witness = null;
     let errored = false;
+    const facing = [1, 3];
+    const positions = [9005, 2005];
     return getBoardHash(createCircuit, {
-      playerFacing: 1,
-      opponentFacing: 3,
-      player: 9002,
-      opponent: 2005,
+      facing,
+      positions,
     })
       .then((boardHash) => {
         return moveCircuit.calculateWitness({
           ...DEFAULT_PARAMS,
           boardHash,
-          playerFacing: 1,
-          opponentFacing: 3,
-          player: 2004,
-          opponent: 2005,
-          playerMove: 6,
-          opponentMove: 0,
+          facing,
+          positions,
+          move: 6,
+          turn: 0,
         });
       })
       .then((w) => {
@@ -410,23 +407,20 @@ describe("Move Circuit Tests", () => {
 
   it("Should do damage on a player attack", async () => {
     let witness = null;
-    let errored = false;
+    const facing = [1, 3];
+    const positions = [2004, 2005];
     return getBoardHash(createCircuit, {
-      playerFacing: 1,
-      opponentFacing: 3,
-      player: 2004,
-      opponent: 2005,
+      facing,
+      positions,
     })
       .then((boardHash) => {
         return moveCircuit.calculateWitness({
           ...DEFAULT_PARAMS,
           boardHash,
-          playerFacing: 1,
-          opponentFacing: 3,
-          player: 2004,
-          opponent: 2005,
-          playerMove: 6,
-          opponentMove: 0,
+          facing,
+          positions,
+          move: 6,
+          turn: 0,
         });
       })
       .then((w) => {
@@ -444,10 +438,10 @@ describe("Move Circuit Tests", () => {
         ] = witness.slice(1, 7);
         assert.equal(playerPosition, 2004);
         assert.equal(playerFacing, 1);
-        assert.equal(playerHP, DEFAULT_PARAMS.playerHP);
+        assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
         assert.equal(opponentPosition, 2005);
         assert.equal(opponentFacing, 3);
-        assert.equal(opponentHP, DEFAULT_PARAMS.opponentHP - 1);
+        assert.equal(opponentHP, DEFAULT_PARAMS.hp[1] - 1);
       });
   });
 
@@ -460,8 +454,8 @@ describe("Move Circuit Tests", () => {
         return moveCircuit.calculateWitness({
           ...DEFAULT_PARAMS,
           boardHash,
-          playerMove: 5,
-          opponentMove: 0,
+          move: 5,
+          turn: 0,
         });
       })
       .then((w) => {
@@ -470,20 +464,24 @@ describe("Move Circuit Tests", () => {
       })
       .then(() => {
         const playerPosition = witness[1];
+        const opponentPosition = witness[4];
         const boardResult = witness[7]; // <-- new board hash
-        assert.equal(playerPosition, DEFAULT_PARAMS.player + 1);
+        assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] + 1);
+        assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]); // hasn't moved
         assert.notEqual(boardHash, boardResult);
         return moveCircuit.calculateWitness({
           ...DEFAULT_PARAMS,
-          player: playerPosition,
           boardHash: boardResult,
-          playerMove: 5,
-          opponentMove: 0,
+          positions: [playerPosition, opponentPosition],
+          move: 5,
+          turn: 1,
         });
       })
       .then((w) => {
         const playerPosition = w[1];
-        assert.equal(playerPosition, DEFAULT_PARAMS.player + 2);
+        const opponentPosition = w[4];
+        assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] + 1);
+        assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] - 1); // second move - one S for opponent
       });
   });
 });

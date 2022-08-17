@@ -2,44 +2,41 @@ pragma circom 2.0.0;
 
 include "../node_modules/circomlib/circuits/poseidon.circom";
 
-template HallFightCreate() {
+template HallFightCreate2() {
   signal input nonce;
   signal input board; // x * 1000 + y
-  signal input player; // x * 1000 + y
-  signal input playerHP;
-  signal input playerFacing;
-  signal input opponent;
-  signal input opponentHP;
-  signal input opponentFacing;
+  signal input positions[2]; // x * 1000 + y
+  signal input hp[2];
+  signal input facing[2];
   signal output boardHash;
 
   var boardY = board % 1000;
   var boardX = (board - boardY) / 1000;
-  var playerY = player % 1000;
-  var playerX = (player - playerY) / 1000;
-  var oppY = opponent % 1000;
-  var oppX = (opponent - oppY) / 1000;
+  var playerY = positions[0] % 1000;
+  var playerX = (positions[0] - playerY) / 1000;
+  var oppY = positions[1] % 1000;
+  var oppX = (positions[1] - oppY) / 1000;
 
-  assert(playerFacing > 0 && playerFacing < 5); // player facing direction.
+  assert(facing[0] > 0 && facing[0] < 5); // player facing direction.
+  assert(facing[1] > 0 && facing[1] < 5); // opponent facing direction.
+  assert(hp[0] > 0 && hp[1] > 0); // player and opponent HP.
   assert(boardX > playerX + 1 && playerX > 0); // player position on the board.
   assert(boardY > playerY && playerY > -1); // player position on the board.
-  assert(opponentFacing > 0 && opponentFacing < 5); // opponent facing direction.
   assert(boardX > oppX + 1 && oppX > 0); // opponent position on the board.
   assert(boardY > oppY && oppY > -1); // opponent position on the board.
-  assert(playerHP > 0 && opponentHP > 0); // player and opponent HP.
 
   // Verify position
   component poseidon = Poseidon(8);
   poseidon.inputs[0] <== nonce;
   poseidon.inputs[1] <== board;
-  poseidon.inputs[2] <== player;
-  poseidon.inputs[3] <== playerFacing;
-  poseidon.inputs[4] <== playerHP;
-  poseidon.inputs[5] <== opponent;
-  poseidon.inputs[6] <== opponentFacing;
-  poseidon.inputs[7] <== opponentHP;
+  poseidon.inputs[2] <== positions[0];
+  poseidon.inputs[3] <== facing[0];
+  poseidon.inputs[4] <== hp[0];
+  poseidon.inputs[5] <== positions[1];
+  poseidon.inputs[6] <== facing[1];
+  poseidon.inputs[7] <== hp[1];
 
   boardHash <-- poseidon.out;
 }
 
-component main = HallFightCreate();
+component main = HallFightCreate2();
