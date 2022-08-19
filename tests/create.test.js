@@ -8,7 +8,6 @@ const DEFAULT_PARAMS = {
   nonce: 1,
   board: 10008,
   positions: [4001, 8002],
-  facing: [1, 3],
   hp: [10, 10],
 };
 
