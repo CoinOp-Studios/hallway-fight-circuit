@@ -18,6 +18,25 @@ const CARDINALS = {
   WEST:   4,
 };
 
+const W_INDEX_OUT = {
+  NONCE:      0,
+  PLAYER_XY:  1,
+  PLAYER_HP:  2,
+  ENEMY_XY:   3,
+  ENEMY_HP:   4,
+  BOARD_HASH: 5,
+}
+
+const W_INDEX_IN = {
+  NONCE:      6,
+  BOARD:      7,
+  PLAYER_XY:  8,
+  PLAYER_HP:  10,
+  ENEMY_XY:   9,
+  ENEMY_HP:   11,
+  BOARD_HASH: 12,
+}
+
 async function getCircuit(name) {
   const circuitFile = path.join(__dirname, "..", "circuits", `${name}.circom`);
   return tester(circuitFile, { output: "./circom" });
@@ -73,7 +92,7 @@ describe("Move Circuit Tests", () => {
             playerHP,
             opponentPosition,
             opponentHP,
-          ] = witness.slice(1, 7);
+          ] = witness.slice(W_INDEX_OUT.PLAYER_XY, W_INDEX_OUT.ENEMY_HP + 1);
           assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] + 1);
           assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]);
           assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
@@ -103,7 +122,7 @@ describe("Move Circuit Tests", () => {
             playerHP,
             opponentPosition,
             opponentHP,
-          ] = witness.slice(1, 7);
+          ] = witness.slice(W_INDEX_OUT.PLAYER_XY, W_INDEX_OUT.ENEMY_HP + 1);
           assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] + 1000);
           assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]);
           assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
@@ -133,7 +152,7 @@ describe("Move Circuit Tests", () => {
             playerHP,
             opponentPosition,
             opponentHP,
-          ] = witness.slice(1, 7);
+          ] = witness.slice(W_INDEX_OUT.PLAYER_XY, W_INDEX_OUT.ENEMY_HP + 1);
           assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] - 1);
           assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]);
           assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
@@ -163,7 +182,7 @@ describe("Move Circuit Tests", () => {
             playerHP,
             opponentPosition,
             opponentHP,
-          ] = witness.slice(1, 7);
+          ] = witness.slice(W_INDEX_OUT.PLAYER_XY, W_INDEX_OUT.ENEMY_HP + 1);
           assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] - 1000);
           assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]);
           assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
@@ -195,7 +214,7 @@ describe("Move Circuit Tests", () => {
             playerHP,
             opponentPosition,
             opponentHP,
-          ] = witness.slice(1, 7);
+          ] = witness.slice(W_INDEX_OUT.PLAYER_XY, W_INDEX_OUT.ENEMY_HP + 1);
           assert.equal(playerPosition, DEFAULT_PARAMS.positions[0]);
           assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] + 1);
           assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
@@ -225,7 +244,7 @@ describe("Move Circuit Tests", () => {
             playerHP,
             opponentPosition,
             opponentHP,
-          ] = witness.slice(1, 7);
+          ] = witness.slice(W_INDEX_OUT.PLAYER_XY, W_INDEX_OUT.ENEMY_HP + 1);
           assert.equal(playerPosition, DEFAULT_PARAMS.positions[0]);
           assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] + 1000);
           assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
@@ -255,7 +274,7 @@ describe("Move Circuit Tests", () => {
             playerHP,
             opponentPosition,
             opponentHP,
-          ] = witness.slice(1, 7);
+          ] = witness.slice(W_INDEX_OUT.PLAYER_XY, W_INDEX_OUT.ENEMY_HP + 1);
           assert.equal(playerPosition, DEFAULT_PARAMS.positions[0]);
           assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] - 1);
           assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
@@ -285,7 +304,7 @@ describe("Move Circuit Tests", () => {
             playerHP,
             opponentPosition,
             opponentHP,
-          ] = witness.slice(1, 7);
+          ] = witness.slice(W_INDEX_OUT.PLAYER_XY, W_INDEX_OUT.ENEMY_HP + 1);
           assert.equal(playerPosition, DEFAULT_PARAMS.positions[0]);
           assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] - 1000);
           assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
@@ -319,7 +338,7 @@ describe("Move Circuit Tests", () => {
           playerHP,
           opponentPosition,
           opponentHP,
-        ] = witness.slice(1, 7);
+        ] = witness.slice(W_INDEX_OUT.PLAYER_XY, W_INDEX_OUT.ENEMY_HP + 1);
         assert.equal(playerPosition, 2004);
         assert.equal(playerHP, DEFAULT_PARAMS.hp[0]);
         assert.equal(opponentPosition, 2005);
@@ -345,9 +364,9 @@ describe("Move Circuit Tests", () => {
         return moveCircuit.checkConstraints(w);
       })
       .then(() => {
-        const playerPosition = witness[1];
-        const opponentPosition = witness[4];
-        const boardResult = witness[7]; // <-- new board hash
+        const playerPosition = witness[W_INDEX_OUT.PLAYER_XY];
+        const opponentPosition = witness[W_INDEX_OUT.ENEMY_XY]; 
+        const boardResult = witness[W_INDEX_OUT.BOARD_HASH]; // <-- new board hash, 5
         assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] + 1);
         assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]); // hasn't moved
         assert.notEqual(boardHash, boardResult);
@@ -360,8 +379,8 @@ describe("Move Circuit Tests", () => {
         });
       })
       .then((w) => {
-        const playerPosition = w[1];
-        const opponentPosition = w[4];
+        const playerPosition = w[W_INDEX_OUT.PLAYER_XY];
+        const opponentPosition = w[W_INDEX_OUT.ENEMY_XY];
         assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] + 1);
         assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] - 1); // second move - one S for opponent
       });
