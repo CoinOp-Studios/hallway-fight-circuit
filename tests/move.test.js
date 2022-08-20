@@ -385,7 +385,45 @@ describe("Move Circuit Tests", () => {
         assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1] - 1); // second move - one S for opponent
       });
   });
+  it("should not allow cheating", async () => {
+    let witness = null;
+    let boardHash = 1;
+    return getBoardHash(createCircuit, {})
+      .then((bh) => {
+        boardHash = bh;
+        return moveCircuit.calculateWitness({
+          ...DEFAULT_PARAMS,
+          boardHash,
+          move: 1,
+          turn: 0,
+        });
+      })
+      .then((w) => {
+        witness = w;
+        return moveCircuit.checkConstraints(w);
+      })
+      .then(() => {
+        const playerPosition = witness[W_INDEX_OUT.PLAYER_XY];
+        const opponentPosition = witness[W_INDEX_OUT.ENEMY_XY]; 
+        const boardResult = witness[W_INDEX_OUT.BOARD_HASH]; // <-- new board hash, 5
+        assert.equal(playerPosition, DEFAULT_PARAMS.positions[0] + 1);
+        assert.equal(opponentPosition, DEFAULT_PARAMS.positions[1]); // hasn't moved
+        assert.notEqual(boardHash, boardResult);
+
+        // 1 added to player pos
+        moveCircuit.calculateWitness({
+          ...DEFAULT_PARAMS,
+          boardHash: boardResult,
+          positions: [playerPosition + 1n, opponentPosition],
+          move: 3,
+          turn: 1,
+        });
+        assert(false);
+      }
+    );
+  });
 });
+
 
 /*
         console.log(`Results:
