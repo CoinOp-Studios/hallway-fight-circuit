@@ -66,4 +66,4 @@ template HallMove() {
   boardResult <== poseidon2.out;
 }
 
-component main { public [nonce, board, positions, hp, facing, move, turn] } = HallMove();
+component main { public [boardHash, nonce, board, positions, hp, move, turn] } = HallMove();

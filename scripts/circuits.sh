@@ -1,7 +1,10 @@
 #!/bin/sh
 set -e
 set -x
-mkdir -p circom
+rm -rf circom
+mkdir -p circom/create
+mkdir -p circom/move
+mkdir -p contracts
 
 CONTRACTS="create move"
 
