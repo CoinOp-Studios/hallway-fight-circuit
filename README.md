@@ -12,6 +12,10 @@ Install 'Circom' using their [downloads](https://docs.circom.io/downloads/downlo
 
 ### Test
 
+Make sure the circuits are built.
+`sh scripts/circuits.sh`
+
+then run the tests with
 `yarn mocha tests`
 
 ## Basic concepts of the "arena"
@@ -22,13 +26,13 @@ Always specified as (x \* 1000) + y. This allows us to encode [x, y] using one p
 
 ### Commands
 
-| Name    | Value | Description       |
-| ------- | ----- | --------------    |
-| NULL    | 0     | reserved          |
-| MOVE_N  | 1     | move or attack N  |
-| MOVE_E  | 2     | move or attack E  |
-| MOVE_S  | 3     | move or attack S  |
-| MOVE_W  | 4     | move or attack W  |
+| Name   | Value | Description      |
+| ------ | ----- | ---------------- |
+| NULL   | 0     | reserved         |
+| MOVE_N | 1     | move or attack N |
+| MOVE_E | 2     | move or attack E |
+| MOVE_S | 3     | move or attack S |
+| MOVE_W | 4     | move or attack W |
 
 ## Circuits
 

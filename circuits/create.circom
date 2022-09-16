@@ -34,4 +34,4 @@ template HallFightCreate2() {
   boardHash <-- poseidon.out;
 }
 
-component main = HallFightCreate2();
+component main { public [nonce, board, positions, hp ] }= HallFightCreate2();
