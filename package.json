@@ -14,5 +14,8 @@
     "ffjavascript": "^0.2.55",
     "mocha": "^10.0.0",
     "snarkjs": "^0.4.24"
+  },
+  "devDependencies": {
+    "blessed": "^0.1.81"
   }
 }
